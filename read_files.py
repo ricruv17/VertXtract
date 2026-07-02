@@ -513,7 +513,12 @@ class STMAFMReader:
 
         # Determine spatial offset depending on file extension
         if filename.endswith('.VERT'):
-            offset = np.array(list(map(float, header_line[-2:]))) * 10
+            coords = header_line[-3:]
+            if coords[-1] == '0':       # for version 20260623
+                coords = coords[:2]
+            else:                       # for version 20240417
+                coords = coords[-1:]
+            offset = np.array(list(map(float, coords))) * 10
         elif filename.endswith('.Vert'):
             basename = filename.split('\\')[-1].split('.')[-2]
             xcoord = int(basename[3:])
