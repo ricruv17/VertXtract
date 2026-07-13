@@ -44,10 +44,6 @@ from matplotlib.widgets import Slider
 
 matplotlib.use("TkAgg")
 
-sys.path.insert(
-    0,
-    r'C:\Users\ruvalcrm\OneDrive - KAUST\Desktop\PC\scripts\STMAFM\VERTXtract',
-)
 from spectra_window import open_spectra_window  # noqa: E402  (path-inserted import)
 from utilities import create_colormap_menu, pan_factory, zoom_factory  # noqa: E402
 
@@ -62,6 +58,13 @@ from read_files import (  # noqa: E402
     SLIDER_STEP,
     STMAFMReader,
 )
+
+# make it so that it takes an argument for folder, if not let's use current folder, Thalis
+dpath = False
+if len(sys.argv) > 1:
+    folder = sys.argv[1]
+else:
+    folder  = dpath
 
 # ---------------------------------------------------------------------------
 # Global matplotlib style
@@ -387,8 +390,10 @@ class STMAFMEntity(STMAFMReader):
 if __name__ == "__main__":
     root = tk.Tk()
     root.withdraw()
-
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    if folder:
+        script_dir = folder
+    else:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
     viewer = STMAFMEntity(script_dir)
     viewer.plot()
 
