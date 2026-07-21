@@ -517,7 +517,7 @@ class STMAFMReader:
             if coords[-1] == '0':       # for version 20260623
                 coords = coords[:2]
             else:                       # for version 20240417
-                coords = coords[-1:]
+                coords = coords[-2:]
             offset = np.array(list(map(float, coords))) * 10
         elif filename.endswith('.Vert'):
             basename = filename.split('\\')[-1].split('.')[-2]
