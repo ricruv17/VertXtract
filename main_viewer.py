@@ -384,11 +384,11 @@ class STMAFMEntity(STMAFMReader):
 # Entry point
 # ---------------------------------------------------------------------------
 
-if __name__ == "__main__":
+def run(directory):
     root = tk.Tk()
     root.withdraw()
 
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    script_dir = os.path.dirname(directory)
     viewer = STMAFMEntity(script_dir)
     viewer.plot()
 
