@@ -15,7 +15,7 @@ conda activate vertxtract
 ```
 
 # Usage
-Open a Conda prompt in the folder where you placed the downloaded files and run: 
+Open a Conda prompt in the folder where you placed your Createc files and run: 
 
 ```powershell
 conda activate vertxtract
@@ -23,6 +23,7 @@ vertxtract "\FolderWithFiles\"
 ```
 or
 ```powershell
+conda activate vertxtract
 vertxtract
 ```
 to execute VERTXtract in the current directory.
