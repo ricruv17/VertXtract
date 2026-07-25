@@ -19,7 +19,12 @@ Open a Conda prompt in the folder where you placed the downloaded files and run:
 
 ```powershell
 conda activate vertxtract
-python main_viewer.py "\FolderWithFiles\"
+vertxtract "\FolderWithFiles\"
 ```
+or
+```powershell
+vertxtract
+```
+to execute VERTXtract in the current directory.
 
 Make sure the folder contains 1 `.DAT` file with 2D information, and the `.VERT` files you wish to analyze.
