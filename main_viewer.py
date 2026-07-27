@@ -49,7 +49,7 @@ sys.path.insert(
     r'C:\Users\ruvalcrm\OneDrive - KAUST\Desktop\PC\scripts\STMAFM\VERTXtract',
 )
 from spectra_window import open_spectra_window  # noqa: E402  (path-inserted import)
-from utilities import create_colormap_menu, pan_factory, zoom_factory  # noqa: E402
+from utilities import create_colormap_menu, pan_factory, zoom_factory, welcoming_message  # noqa: E402
 
 from read_files import (  # noqa: E402
     CHANNEL_LABELS,
@@ -388,6 +388,7 @@ if __name__ == "__main__":
     root = tk.Tk()
     root.withdraw()
 
+    print_welcoming_message()
     script_dir = os.path.dirname(os.path.abspath(__file__))
     viewer = STMAFMEntity(script_dir)
     viewer.plot()
