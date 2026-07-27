@@ -571,3 +571,48 @@ def low_pass(spectra_list: list[dict], column: str, level: int) -> None:
             y = data[column].values
             if len(y) > 3:
                 data[column] = gaussian_filter1d(y, sigma=sigma)
+
+
+def print_welcoming_message() -> None:
+    """Print a formatted welcome banner to stdout when VERTXtract is launched."""
+    # Replace DOI_PLACEHOLDER with the actual DOI once the paper is published.
+
+    banner = r"""
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                                                                              ║
+║             _   _ ___________ _______   ___                  _               ║
+║            | | | |  ___| ___ \_   _\ \ / / |                | |              ║
+║            | | | | |__ | |_/ / | |  \ V /| |_ _ __ __ _  ___| |_             ║
+║            | | | |  __||    /  | |  /   \| __| '__/ _` |/ __| __|            ║
+║            \ \_/ / |___| |\ \  | | / /^\ \ |_| | | (_| | (__| |_             ║
+║             \___/\____/\_| \_| \_/ \/   \/\__|_|  \__,_|\___|\___|           ║
+║                                                                              ║
+║                                                                              ║
+║            Interactive STM/AFM Spectra Extraction & Visualization            ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  Authors │ Ricardo Ruvalcaba, Thalis Stavridis, Shaoxian Li, Shadi Fatayer   ║
+║  Group   │ Fatayer Lab — Surface and Interface Science                       ║
+║  Inst.   │ King Abdullah University of Science and Technology (KAUST)        ║
+║          │ Thuwal, Saudi Arabia                                              ║
+║  Contact │ ricardo.ruvalcaba.briones@gmail.com                               ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  If VERTXtract contributes to your research, please cite:                    ║
+║                                                                              ║
+║    R. Ruvalcaba, (2025). VERTXtract: Interactive STM/AFM Data Viewer.        ║
+║    Journal of Open Source Software.                                          ║
+║    DOI: DOI_PLACEHOLDER                                                      ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  Keyboard shortcuts                                                          ║
+║       Scroll → zoom                     │  Middle-click drag → pan           ║
+║       Right-click → switch channel      │  Left-click → open spectra window  ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+"""
+    print(banner)
