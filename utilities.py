@@ -597,7 +597,7 @@ def print_welcoming_message() -> None:
 ╠══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                              ║
 ║  Authors │ Ricardo Ruvalcaba, Thalis Stavridis, Shaoxian Li, Shadi Fatayer   ║
-║  Group   │ Fatayer Lab — Surface and Interface Science                       ║
+║  Group   │ Manipulation Of NAnosystems (MONA) group                          ║
 ║  Inst.   │ King Abdullah University of Science and Technology (KAUST)        ║
 ║          │ Thuwal, Saudi Arabia                                              ║
 ║  Contact │ ricardo.ruvalcaba.briones@gmail.com                               ║
