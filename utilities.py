@@ -575,7 +575,10 @@ def low_pass(spectra_list: list[dict], column: str, level: int) -> None:
 
 def print_welcoming_message() -> None:
     """Print a formatted welcome banner to stdout when VERTXtract is launched."""
+
+    # -------------------------------------------------------------------------
     # Replace DOI_PLACEHOLDER with the actual DOI once the paper is published.
+    # -------------------------------------------------------------------------
 
     banner = r"""
 ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -603,15 +606,15 @@ def print_welcoming_message() -> None:
 ║                                                                              ║
 ║  If VERTXtract contributes to your research, please cite:                    ║
 ║                                                                              ║
-║    R. Ruvalcaba, (2025). VERTXtract: Interactive STM/AFM Data Viewer.        ║
-║    Journal of Open Source Software.                                          ║
+║    R. Ruvalcaba, T. Stavridis, S. Li, S. Fatayer, (2025). VERTXtract:        ║
+║    Interactive STM/AFM Data Viewer. Journal of Open Source Software.         ║
 ║    DOI: DOI_PLACEHOLDER                                                      ║
 ║                                                                              ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                              ║
 ║  Keyboard shortcuts                                                          ║
-║       Scroll → zoom                     │  Middle-click drag → pan           ║
-║       Right-click → switch channel      │  Left-click → open spectra window  ║
+║      Scroll → zoom                   │     Middle-click drag → pan           ║
+║      Right-click → switch channel    │     Left-click → open spectra window  ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
