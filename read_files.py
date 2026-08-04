@@ -93,10 +93,10 @@ CHANNEL_LABELS: dict[str, str] = {
 
 VERTMAN_CHANNELS_LIST: list[str] = [
     "Current(filtered)", "Lock-in X", "Lock-in X(2f)",
-    "ACD0", "ACD1", "ACD2", "ACD3",
+    "ADC0", "ADC1", "ADC2", "ADC3",
     "df", "Damping", "Amplitude", "Lock-in Y", "Lock-in Y(2f)",
     "Z-Signal", "BIAS FB", "",
-    "ACD4", "ACD5", "ACD6", "ACD7", " ",
+    "ADC4", "ADC5", "ADC6", "ADC7", " ",
     "Z-Topography", "Pot.Volt", "Pot.Current",
     "", "", "", "", "", "", "",
     "Aux3", "Aux4", "SignalBias",
