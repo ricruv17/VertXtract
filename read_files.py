@@ -16,7 +16,8 @@ Author: Ricardo Ruvalcaba, August 17, 2025
 import os
 import re
 from typing import Optional
-
+from sklearn.cluster import DBSCAN
+from sklearn.neighbors import NearestNeighbors
 import createc
 import numpy as np
 import pandas as pd
@@ -457,6 +458,58 @@ class STMAFMReader:
     # Spectra loading
     # ------------------------------------------------------------------
 
+    def _assign_colors(self) -> None:
+        """Assign a color to each spectrum based on automatic spatial clustering.
+
+        Clusters are detected with DBSCAN using an eps value estimated from
+        the k-nearest-neighbor distance distribution (the elbow method).
+        This handles any operator-chosen spacing without a fixed threshold.
+
+        Within each cluster a tab10 cycle is applied.
+        Noise points (DBSCAN label = -1, isolated spectra) each get their own tab10 color.
+        """
+        if not self.spectra:
+            return
+
+        coords = np.array([spec['rotated'] for spec in self.spectra])
+
+        # --- Estimate eps from k-NN distances ---
+        if len(coords) >= 2:
+            k = min(2, len(coords) - 1)
+            nbrs = NearestNeighbors(n_neighbors=k).fit(coords)
+            distances, _ = nbrs.kneighbors(coords)
+            nn_distances = distances[:, -1]          # distance to k-th neighbor
+            nn_distances_sorted = np.sort(nn_distances)
+
+            # Elbow: largest gap between consecutive sorted distances
+            gaps = np.diff(nn_distances_sorted)
+            elbow_idx = int(np.argmax(gaps))
+            elbow_dist = nn_distances_sorted[elbow_idx]
+
+            # eps = midpoint of the largest gap, with a floor of 0.1 Å
+            eps = max(elbow_dist + gaps[elbow_idx] / 2, 0.1)
+            labels = DBSCAN(eps=eps, min_samples=1).fit_predict(coords)
+        else:
+            # Single spectrum — trivially one cluster
+            labels = np.array([0])
+
+        # --- Assign colors per cluster ---
+        tab10 = plt.get_cmap('tab10').colors
+        color_cycle = itertools.cycle(tab10)
+        cluster_colors = {}   # cluster_id → color
+
+        for spec, label in zip(self.spectra, labels):
+            if label == -1:
+                # Noise / isolated point — give it its own tab10 color
+                color = next(color_cycle)
+            else:
+                if label not in cluster_colors:
+                    cluster_colors[label] = next(color_cycle)
+                color = cluster_colors[label]
+
+            spec['color'] = color
+
+
     def _extract_vertman_data(
         self,
         filename: str,
@@ -629,7 +682,7 @@ class STMAFMReader:
             for spec in self.spectra:
                 dist = np.linalg.norm(spec['rotated'] - np.array([x_rot, y_rot]))
                 if dist <= 0.5:
-                    color = spec['color']
+                    color = self._assign_colors()
                     break
             if color is None:
                 color = next(color_cycle)
