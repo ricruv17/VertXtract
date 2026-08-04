@@ -127,11 +127,16 @@ def dIdV_window(spectra_list: list[dict], index_range: tuple) -> None:
                 data = spec['data']
                 if (
                     'Lock-in X' in data.columns
-                    and 'ACD0' in data.columns
                     and 'Voltage' in data.columns
                 ):
+                    if ('ACD0' not in data.columns
+                        and 'Current(filtered)' in data.columns
+                    ):
+                        current = data['Current(filtered)'].iloc[index_min:index_max].values
+                    else:
+                        current = data['ACD0'].iloc[index_min:index_max].values
+
                     lockin = data['Lock-in X'].iloc[index_min:index_max].values
-                    current = data['ACD0'].iloc[index_min:index_max].values
                     voltage = data['Voltage'].iloc[index_min:index_max].values
 
                     eps = 1e-3
