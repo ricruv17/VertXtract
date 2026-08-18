@@ -6,6 +6,7 @@ Shared utility functions for the STM/AFM interactive viewer suite.
 Provides:
     - Matplotlib zoom and pan helpers (``zoom_factory``, ``pan_factory``).
     - Tkinter-based colourmap selector (``create_colormap_menu``).
+    - Directory-picker menu entry (``create_load_directory_menu``).
     - CSV export helpers (``export_to_csv``, ``export_grid_csv``).
     - Grid-building routines for 2-D map plots
       (``extract_data_RvsZplot``, ``extract_data_RvsZ_Vstar_plot``,
@@ -16,6 +17,7 @@ Provides:
 import ast
 import re
 from tkinter import filedialog
+from typing import Callable, Optional
 
 import matplotlib
 import numpy as np
@@ -28,6 +30,44 @@ from scipy.ndimage import gaussian_filter1d
 from scipy.signal import savgol_filter
 
 
+BANNER = r"""
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                                                                              ║
+║             _   _ ___________ _______   ___                  _               ║
+║            | | | |  ___| ___ \_   _\ \ / / |                | |              ║
+║            | | | | |__ | |_/ / | |  \ V /| |_ _ __ __ _  ___| |_             ║
+║            | | | |  __||    /  | |  /   \| __| '__/ _` |/ __| __|            ║
+║            \ \_/ / |___| |\ \  | | / /^\ \ |_| | | (_| | (__| |_             ║
+║             \___/\____/\_| \_| \_/ \/   \/\__|_|  \__,_|\___|\___|           ║
+║                                                                              ║
+║                                                                              ║
+║            Interactive STM/AFM Spectra Extraction & Visualization            ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  Authors │ Ricardo Ruvalcaba, Thalis Stavridis, Shaoxian Li, Shadi Fatayer   ║
+║  Group   │ Manipulation Of NAnosystems (MONA) group                          ║
+║  Inst.   │ King Abdullah University of Science and Technology (KAUST)        ║
+║          │ Thuwal, Saudi Arabia                                              ║
+║  Contact │ ricardo.ruvalcaba.briones@gmail.com                               ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  If VERTXtract contributes to your research, please cite:                    ║
+║                                                                              ║
+║    R. Ruvalcaba, T. Stavridis, S. Li, S. Fatayer, (2026). VERTXtract:        ║
+║    Interactive STM/AFM Data Viewer. Journal_Placeholder.                     ║
+║    DOI: DOI_PLACEHOLDER                                                      ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  Keyboard shortcuts                                                          ║
+║      Scroll → zoom                   │     Middle-click drag → pan           ║
+║      Right-click → switch channel    │     Left-click → open spectra window  ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+"""
 # ---------------------------------------------------------------------------
 # Zoom / pan
 # ---------------------------------------------------------------------------
@@ -113,15 +153,67 @@ def pan_factory(ax, button: int = 2) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Directory picker menu entry
+# ---------------------------------------------------------------------------
+
+def create_load_directory_menu(
+    fig,
+    on_directory_selected: Callable[[str], None],
+) -> None:
+    """Add an 'Open directory' entry to the figure's window menu bar.
+
+    Opens the system file-explorer directory picker when clicked.  The chosen
+    path is passed to *on_directory_selected*, which the caller uses to load
+    data into the viewer.
+
+    Call this **before** :func:`create_colormap_menu` so the 'Open directory'
+    entry appears to the left of 'Colormap' in the menu bar.
+
+    Parameters
+    ----------
+    fig:
+        Matplotlib figure whose Tk window will receive the menu entry.
+    on_directory_selected:
+        Callable that receives the absolute path of the chosen directory as a
+        ``str``.  Called only when the user picks a directory (not on cancel).
+    """
+    tk_window = fig.canvas.manager.window
+
+    def _pick_directory() -> None:
+        folder = filedialog.askdirectory(
+            title="Select experiment folder",
+            mustexist=True,
+        )
+        if folder:
+            on_directory_selected(folder)
+
+    # Retrieve or create the shared menu bar so both menu functions can add
+    # entries to the same bar without overwriting each other.
+    menu_bar = tk_window.cget("menu") or ""
+    if menu_bar:
+        # A menu bar already exists (created by create_colormap_menu first).
+        # This path is unlikely given call-order convention, but handled safely.
+        menu_bar = tk_window.nametowidget(menu_bar)
+    else:
+        menu_bar = tk.Menu(tk_window)
+        tk_window.config(menu=menu_bar)
+
+    menu_bar.add_command(label="Open directory", command=_pick_directory)
+
+
+# ---------------------------------------------------------------------------
 # Colourmap selector
 # ---------------------------------------------------------------------------
 
 def create_colormap_menu(fig, pcm, current_cmap: tk.StringVar) -> None:
-    """Add a 'Colormap (slow)' menu entry to the figure's window menu bar.
+    """Add a 'Colormap (loads slowly...)' entry to the figure's window menu bar.
 
     Opens a scrollable Tk window showing a preview strip for every registered
     Matplotlib colourmap.  Clicking a strip applies that colourmap to *pcm*
     and redraws *fig*.
+
+    Call this **after** :func:`create_load_directory_menu` so the colormap
+    entry appears to the right of 'Open directory' in the menu bar.
 
     Parameters
     ----------
@@ -198,8 +290,14 @@ def create_colormap_menu(fig, pcm, current_cmap: tk.StringVar) -> None:
 
         _bind_mousewheel_recursive(win)
 
-    menu_bar = tk.Menu(tk_window)
-    tk_window.config(menu=menu_bar)
+    # Retrieve or create the shared menu bar.
+    menu_bar = tk_window.cget("menu") or ""
+    if menu_bar:
+        menu_bar = tk_window.nametowidget(menu_bar)
+    else:
+        menu_bar = tk.Menu(tk_window)
+        tk_window.config(menu=menu_bar)
+
     menu_bar.add_command(label="Colormap (loads slowly...)", command=_open_selector)
 
 
@@ -359,7 +457,6 @@ def extract_data_RvsZplot(
 
     term_data = np.array(term_data, dtype=float)
 
-    # --- Displacement axis ---
     unique_terms = np.unique(term_data[:, 0])
     unique_terms.sort()
     first_term = unique_terms[0]
@@ -371,7 +468,6 @@ def extract_data_RvsZplot(
     displacement_distance = np.linalg.norm(avg_last_xy - avg_first_xy)
     displacement_centers = np.linspace(0, displacement_distance, len(unique_terms))
 
-    # --- Unique axes ---
     height_centers = np.sort(np.unique(term_data[:, 1]))
     term_centers = np.sort(np.unique(term_data[:, 0]))
 
@@ -443,7 +539,6 @@ def extract_data_RvsZ_Vstar_plot(
 
     term_data = np.array(term_data, dtype=float)
 
-    # --- Displacement axis ---
     unique_terms = np.unique(term_data[:, 0])
     unique_terms.sort()
     first_term = unique_terms[0]
@@ -455,7 +550,6 @@ def extract_data_RvsZ_Vstar_plot(
     displacement_distance = np.linalg.norm(avg_last_xy - avg_first_xy)
     displacement_centers = np.linspace(0, displacement_distance, len(unique_terms))
 
-    # --- Unique axes ---
     height_centers = np.sort(np.unique(term_data[:, 1]))
     term_centers = np.sort(np.unique(term_data[:, 0]))
 
@@ -573,49 +667,10 @@ def low_pass(spectra_list: list[dict], column: str, level: int) -> None:
                 data[column] = gaussian_filter1d(y, sigma=sigma)
 
 
+# ---------------------------------------------------------------------------
+# Welcome banner
+# ---------------------------------------------------------------------------
+
 def print_welcoming_message() -> None:
     """Print a formatted welcome banner to stdout when VERTXtract is launched."""
-
-    # -------------------------------------------------------------------------
-    # Replace DOI_PLACEHOLDER with the actual DOI once the paper is published.
-    # -------------------------------------------------------------------------
-
-    banner = r"""
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                                                                              ║
-║                                                                              ║
-║             _   _ ___________ _______   ___                  _               ║
-║            | | | |  ___| ___ \_   _\ \ / / |                | |              ║
-║            | | | | |__ | |_/ / | |  \ V /| |_ _ __ __ _  ___| |_             ║
-║            | | | |  __||    /  | |  /   \| __| '__/ _` |/ __| __|            ║
-║            \ \_/ / |___| |\ \  | | / /^\ \ |_| | | (_| | (__| |_             ║
-║             \___/\____/\_| \_| \_/ \/   \/\__|_|  \__,_|\___|\___|           ║
-║                                                                              ║
-║                                                                              ║
-║            Interactive STM/AFM Spectra Extraction & Visualization            ║
-║                                                                              ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║                                                                              ║
-║  Authors │ Ricardo Ruvalcaba, Thalis Stavridis, Shaoxian Li, Shadi Fatayer   ║
-║  Group   │ Manipulation Of NAnosystems (MONA) group                          ║
-║  Inst.   │ King Abdullah University of Science and Technology (KAUST)        ║
-║          │ Thuwal, Saudi Arabia                                              ║
-║  Contact │ ricardo.ruvalcaba.briones@gmail.com                               ║
-║                                                                              ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║                                                                              ║
-║  If VERTXtract contributes to your research, please cite:                    ║
-║                                                                              ║
-║    R. Ruvalcaba, T. Stavridis, S. Li, S. Fatayer, (2025). VERTXtract:        ║
-║    Interactive STM/AFM Data Viewer. Journal of Open Source Software.         ║
-║    DOI: DOI_PLACEHOLDER                                                      ║
-║                                                                              ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║                                                                              ║
-║  Keyboard shortcuts                                                          ║
-║      Scroll → zoom                   │     Middle-click drag → pan           ║
-║      Right-click → switch channel    │     Left-click → open spectra window  ║
-║                                                                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-"""
-    print(banner)
+    print(BANNER)

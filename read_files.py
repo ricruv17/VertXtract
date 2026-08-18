@@ -179,6 +179,52 @@ class STMAFMReader:
     ----------
     folder_path:
         Absolute path to the folder containing exactly one .DAT file and
+        any number of .VERT / .Vert spectra files.  Pass ``None`` to
+        construct an uninitialised reader; call :meth:`load` later.
+    """
+
+    def __init__(self, folder_path: Optional[str] = None) -> None:
+        # Sentinel values so attribute access is always safe, even before load()
+        self.folder_path: Optional[str] = folder_path
+        self.spectra: list[dict] = []
+        self.available_channels: list[tuple[str, int]] = []
+        self.nonempty_channels: list[tuple[str, int]] = []
+        self.current_channel: str = ''
+        self.first_valid_index: int = 0
+
+        if folder_path is not None:
+            self.load(folder_path)
+
+    def load(self, folder_path: str) -> None:
+        """Load all data from *folder_path*, replacing any previously loaded data.
+
+        Safe to call multiple times on the same instance.  Mirrors the original
+        ``__init__`` loading sequence exactly.
+
+        Parameters
+        ----------
+        folder_path:
+            Absolute path to the experiment folder to load.
+        """
+        self.folder_path = folder_path
+        self.dat_file = self._find_dat_file()
+        self.image_location = os.path.join(self.folder_path, self.dat_file)
+        self.scan = createc.DAT_IMG(self.image_location)
+
+        self._load_metadata()
+        self._load_spectra()
+        self._detect_channels()
+
+    """Loads and calibrates all data from a single Createc STM/AFM experiment folder.
+
+    Reads one .DAT image file and all .VERT / .Vert spectra files, applies
+    instrument-specific calibration, and stores the results as instance
+    attributes for consumption by a visualisation layer.
+
+    Parameters
+    ----------
+    folder_path:
+        Absolute path to the folder containing exactly one .DAT file and
         any number of .VERT / .Vert spectra files.
 
     Attributes
@@ -204,9 +250,31 @@ class STMAFMReader:
     spectra : list[dict]
     """
 
-    def __init__(self, folder_path: str) -> None:
-        self.folder_path: str = folder_path
+    def __init__(self, folder_path: Optional[str] = None) -> None:
+        # Safe sentinel values so attribute access never raises before load()
+        self.folder_path: Optional[str] = None
+        self.spectra: list[dict] = []
+        self.available_channels: list[tuple[str, int]] = []
+        self.nonempty_channels: list[tuple[str, int]] = []
+        self.current_channel: str = ''
+        self.first_valid_index: int = 0
 
+        if folder_path is not None:
+            self.load(folder_path)
+
+    def load(self, folder_path: str) -> None:
+        """Load all data from *folder_path*, replacing any previously loaded data.
+
+        Safe to call multiple times on the same instance.  Called automatically
+        by ``__init__`` when a path is supplied, or later by the GUI after the
+        user picks a directory.
+
+        Parameters
+        ----------
+        folder_path:
+            Absolute path to the experiment folder to load.
+        """
+        self.folder_path = folder_path
         self.dat_file: str = self._find_dat_file()
         self.image_location: str = os.path.join(self.folder_path, self.dat_file)
         self.scan: createc.DAT_IMG = createc.DAT_IMG(self.image_location)
