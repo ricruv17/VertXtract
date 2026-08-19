@@ -154,7 +154,7 @@ class STMAFMEntity(STMAFMReader):
         plt.get_current_fig_manager().window.wm_geometry("+0+0")
 
         # Placeholder: axes are empty until a directory is loaded.
-        self.ax.set_title("VERTXtract: Open a directory to begin")
+        self.ax.set_title("VertXtract: Open a directory to begin")
         self.ax.set_xlabel("X (Å)")
         self.ax.set_ylabel("Y (Å)")
         self._placeholder_text = self.ax.text(

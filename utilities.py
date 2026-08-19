@@ -34,12 +34,12 @@ BANNER = r"""
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║
 ║                                                                              ║
-║             _   _ ___________ _______   ___                  _               ║
-║            | | | |  ___| ___ \_   _\ \ / / |                | |              ║
-║            | | | | |__ | |_/ / | |  \ V /| |_ _ __ __ _  ___| |_             ║
-║            | | | |  __||    /  | |  /   \| __| '__/ _` |/ __| __|            ║
-║            \ \_/ / |___| |\ \  | | / /^\ \ |_| | | (_| | (__| |_             ║
-║             \___/\____/\_| \_| \_/ \/   \/\__|_|  \__,_|\___|\___|           ║
+║               _   _           _  __   ___                  _                 ║
+║              | | | |         | | \ \ / / |                | |                ║    
+║              | | | | ___ _ __| |_ \ V /| |_ _ __ __ _  ___| |_               ║
+║              | | | |/ _ \ '__| __|/   \| __| '__/ _` |/ __| __|              ║
+║              \ \_/ /  __/ |  | |_/ /^\ \ |_| | | (_| | (__| |_               ║
+║               \___/ \___|_|   \__\/   \/\__|_|  \__,_|\___|\__|              ║
 ║                                                                              ║
 ║                                                                              ║
 ║            Interactive STM/AFM Spectra Extraction & Visualization            ║
@@ -54,9 +54,9 @@ BANNER = r"""
 ║                                                                              ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                              ║
-║  If VERTXtract contributes to your research, please cite:                    ║
+║  If VertXtract contributes to your research, please cite:                    ║
 ║                                                                              ║
-║    R. Ruvalcaba, T. Stavridis, S. Li, S. Fatayer, (2026). VERTXtract:        ║
+║    R. Ruvalcaba, T. Stavridis, S. Li, S. Fatayer, (2026). VertXtract:        ║
 ║    Interactive STM/AFM Data Viewer. Journal_Placeholder.                     ║
 ║    DOI: DOI_PLACEHOLDER                                                      ║
 ║                                                                              ║
@@ -672,5 +672,5 @@ def low_pass(spectra_list: list[dict], column: str, level: int) -> None:
 # ---------------------------------------------------------------------------
 
 def print_welcoming_message() -> None:
-    """Print a formatted welcome banner to stdout when VERTXtract is launched."""
+    """Print a formatted welcome banner to stdout when VertXtract is launched."""
     print(BANNER)
