@@ -1,0 +1,1 @@
+pyinstaller --onedir --clean --icon=vertxtract.ico --paths="D:\Thalis\vertextractbuild" --collect-all scipy --collect-all matplotlib --collect-all pillow_avif --collect-all createc --hidden-import=spectra_window --hidden-import=utilities --hidden-import=read_files --noconfirm vertxtract.py

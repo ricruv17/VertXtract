@@ -38,6 +38,24 @@ Related repositories:
 
 import os
 import sys
+import tempfile
+import ctypes
+try:
+    import pillow_avif
+    #print("AVIF loaded successfully!")
+except ImportError as e:
+    print(f"avif support failed. Reason: {e}")
+
+if sys.platform == "win32":
+    myappid = 'mycompany.vertextract.app.1.0'
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
+if getattr(sys, 'frozen', False):
+    config_dir = os.path.join(sys._MEIPASS, 'matplotlib-config')
+    os.makedirs(config_dir, exist_ok=True)
+    os.environ['MPLCONFIGDIR'] = config_dir
+    os.environ['MATPLOTLIBDATA'] = os.path.join(sys._MEIPASS, 'matplotlib', 'mpl-data')
+    
 import tkinter as tk
 from typing import Optional
 
@@ -50,10 +68,7 @@ from matplotlib.widgets import Slider
 
 matplotlib.use("TkAgg")
 
-sys.path.insert(
-    0,
-    r'C:\Users\ruvalcrm\OneDrive - KAUST\Desktop\PC\scripts\STMAFM\VERTXtract',
-)
+
 from spectra_window import open_spectra_window  # noqa: E402
 from utilities import (  # noqa: E402
     BANNER,
