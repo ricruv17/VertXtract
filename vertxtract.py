@@ -356,7 +356,7 @@ class STMAFMEntity(STMAFMReader):
 
         self.ax.set_xlabel('X (Å)')
         self.ax.set_ylabel('Y (Å)')
-        self.ax.set_title(f"Interactive Spectra Processor\n{os.path.basename(self.folder_path)}")
+        self.ax.set_title(f"VertXtract main window\n{os.path.basename(self.folder_path)}")
 
         self.fig.canvas.draw_idle()
         print("[INFO] Figure updated.")
