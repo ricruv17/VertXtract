@@ -678,10 +678,13 @@ class STMAFMReader:
 
         data.columns = columns_in_file
 
-        # Convert Z from piezo-drive volts to ångström
+        # Convert Z and current from piezo-drive volts to ångström and amperes, respectively
         if 'Z' in data.columns:
             data['Z'] *= PIEZO_CONSTANT
-
+        if 'Current(filtered)' in data.columns:
+            data['Current(filtered)'] *= CURRENT_SCALE
+        if 'ADC0' in data.columns:
+            data['ADC0'] *= CURRENT_SCALE
         data.drop(columns=['NaNs'], inplace=True)
 
         # Prepend absolute time axis
