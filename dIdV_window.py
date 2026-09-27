@@ -139,7 +139,7 @@ def dIdV_window(spectra_list: list[dict], index_range: tuple) -> None:
                     lockin = data['Lock-in X'].iloc[index_min:index_max].values
                     voltage = data['Voltage'].iloc[index_min:index_max].values
 
-                    eps = 1e-3
+                    eps = 1e-15
                     iv = current / (voltage + eps)
                     y = lockin / (iv + eps)
                     y = np.nan_to_num(y, nan=0.0, posinf=0.0, neginf=0.0)
