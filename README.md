@@ -20,7 +20,7 @@ Open a Conda prompt in that folder and run:
 conda env create -f vertxtract.yml
 ```
 # Usage
-Open the software and load a folder from the GUI. Make sure the folder contains 1 `.DAT` file with 2D information, and the `.VERT` files you wish to analyze.
+Open the software and load a folder from the GUI. Make sure the folder contains exactly ONE `.DAT` file with 2D information, and the `.VERT` files you wish to analyze.
 
 If you are using conda you may run the software like this:
 
